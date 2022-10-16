@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-10-2022 a las 01:47:10
+-- Tiempo de generación: 15-10-2022 a las 07:03:37
 -- Versión del servidor: 10.4.20-MariaDB
 -- Versión de PHP: 8.0.9
 
@@ -20,6 +20,32 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `sidetapp`
 --
+CREATE DATABASE IF NOT EXISTS `sidetapp` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `sidetapp`;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `actividad_economica`
+--
+
+CREATE TABLE `actividad_economica` (
+  `CIIU` int(11) NOT NULL,
+  `agrupacion` int(11) NOT NULL,
+  `descripcion_actividad` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `actividad_empleador`
+--
+
+CREATE TABLE `actividad_empleador` (
+  `id` int(11) NOT NULL,
+  `ciiu_actividad` int(11) NOT NULL,
+  `id_empleador` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -70,7 +96,6 @@ CREATE TABLE `empleado` (
   `contraseña` varchar(20) NOT NULL,
   `nombre_usu` varchar(20) NOT NULL,
   `fechanacimiento_usu` date NOT NULL,
-  `edad_usu` varchar(20) NOT NULL,
   `id_areaconocimiento_usu` int(11) NOT NULL,
   `id_habilidad_usu` int(11) NOT NULL,
   `id_ciudad` int(11) NOT NULL,
@@ -85,9 +110,9 @@ CREATE TABLE `empleado` (
 -- Volcado de datos para la tabla `empleado`
 --
 
-INSERT INTO `empleado` (`DNI`, `contraseña`, `nombre_usu`, `fechanacimiento_usu`, `edad_usu`, `id_areaconocimiento_usu`, `id_habilidad_usu`, `id_ciudad`, `direccion_usu`, `telefono_usu`, `disponibilidad_usu`, `hoja_vida_usu`, `calificacion_usu`) VALUES
-(123, '123', 'cristian', '2022-10-05', '18', 0, 0, 0, 'bogota', '333', 'si', '', 0),
-(222, '123', 'ferney', '2022-10-02', '22', 0, 0, 0, 'jcdcn', '444', 'si', '', 0);
+INSERT INTO `empleado` (`DNI`, `contraseña`, `nombre_usu`, `fechanacimiento_usu`, `id_areaconocimiento_usu`, `id_habilidad_usu`, `id_ciudad`, `direccion_usu`, `telefono_usu`, `disponibilidad_usu`, `hoja_vida_usu`, `calificacion_usu`) VALUES
+(123, '123', 'cristian', '2022-10-05', 0, 0, 0, 'bogota', '333', 'si', '', 0),
+(222, '123', 'ferney', '2022-10-02', 0, 0, 0, 'jcdcn', '444', 'si', '', 0);
 
 -- --------------------------------------------------------
 
@@ -101,7 +126,7 @@ CREATE TABLE `empleador` (
   `direccion_emp` varchar(20) NOT NULL,
   `telefono_emp` varchar(20) NOT NULL,
   `nombre_emp` varchar(20) NOT NULL,
-  `id_razon_social` int(11) NOT NULL,
+  `id_actividad_economica` int(11) NOT NULL,
   `id_ciudad` int(11) NOT NULL,
   `id_calificacion_emp` int(11) NOT NULL,
   `representante_legal_emp` varchar(20) NOT NULL
@@ -167,19 +192,6 @@ CREATE TABLE `oferta` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `razon_social_emp`
---
-
-CREATE TABLE `razon_social_emp` (
-  `ID` int(11) NOT NULL,
-  `nombre` varchar(20) NOT NULL,
-  `descripcion` varchar(20) NOT NULL,
-  `id_empleador` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `requisitos_oferta`
 --
 
@@ -193,6 +205,20 @@ CREATE TABLE `requisitos_oferta` (
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `actividad_economica`
+--
+ALTER TABLE `actividad_economica`
+  ADD PRIMARY KEY (`CIIU`);
+
+--
+-- Indices de la tabla `actividad_empleador`
+--
+ALTER TABLE `actividad_empleador`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ciiu_actividad` (`ciiu_actividad`),
+  ADD KEY `id_empleador` (`id_empleador`);
 
 --
 -- Indices de la tabla `area_conocimiento_usu`
@@ -229,9 +255,9 @@ ALTER TABLE `empleado`
 --
 ALTER TABLE `empleador`
   ADD PRIMARY KEY (`NIT`),
-  ADD KEY `id_razon_social` (`id_razon_social`),
   ADD KEY `id_ciudad` (`id_ciudad`),
-  ADD KEY `id_calificacion_emp` (`id_calificacion_emp`);
+  ADD KEY `id_calificacion_emp` (`id_calificacion_emp`),
+  ADD KEY `id_actividad_economica` (`id_actividad_economica`) USING BTREE;
 
 --
 -- Indices de la tabla `empleado_oferta`
@@ -266,13 +292,6 @@ ALTER TABLE `oferta`
   ADD KEY `fk_NIT_empleador` (`fk_NIT_empleador`);
 
 --
--- Indices de la tabla `razon_social_emp`
---
-ALTER TABLE `razon_social_emp`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `id_empleador` (`id_empleador`);
-
---
 -- Indices de la tabla `requisitos_oferta`
 --
 ALTER TABLE `requisitos_oferta`
@@ -282,6 +301,12 @@ ALTER TABLE `requisitos_oferta`
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
+
+--
+-- AUTO_INCREMENT de la tabla `actividad_empleador`
+--
+ALTER TABLE `actividad_empleador`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `area_conocimiento_usu`
@@ -326,12 +351,6 @@ ALTER TABLE `oferta`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `razon_social_emp`
---
-ALTER TABLE `razon_social_emp`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `requisitos_oferta`
 --
 ALTER TABLE `requisitos_oferta`
@@ -340,6 +359,13 @@ ALTER TABLE `requisitos_oferta`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `actividad_empleador`
+--
+ALTER TABLE `actividad_empleador`
+  ADD CONSTRAINT `actividad_empleador_ibfk_2` FOREIGN KEY (`id_empleador`) REFERENCES `empleador` (`NIT`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `actividad_empleador_ibfk_3` FOREIGN KEY (`ciiu_actividad`) REFERENCES `actividad_economica` (`CIIU`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `area_conocimiento_usu`
@@ -377,12 +403,6 @@ ALTER TABLE `habilidades_usuario`
 --
 ALTER TABLE `oferta`
   ADD CONSTRAINT `oferta_ibfk_1` FOREIGN KEY (`fk_NIT_empleador`) REFERENCES `empleador` (`NIT`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `razon_social_emp`
---
-ALTER TABLE `razon_social_emp`
-  ADD CONSTRAINT `razon_social_emp_ibfk_1` FOREIGN KEY (`id_empleador`) REFERENCES `empleador` (`NIT`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `requisitos_oferta`
